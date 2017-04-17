@@ -337,7 +337,7 @@ function buildManyElementUpdate() {
 }
 
 tests.push( { name: "Update.ManyElementsWithinArray",
-              tags: ['update','regression', 'charlie'],
+              tags: ['update','regression'],
               pre: function( collection ) {
                   collection.drop();
 
@@ -367,7 +367,7 @@ tests.push( { name: "Update.ManyElementsWithinArray",
  *        element to a random number.
  */
 tests.push( { name: "Update.MatchedElementWithinArray",
-              tags: ['update','regression', 'charlie'],
+              tags: ['update','regression'],
               pre: function( collection ) {
                   collection.drop();
 
