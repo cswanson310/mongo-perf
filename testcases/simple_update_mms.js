@@ -20,11 +20,11 @@ var setupMMS = function( collection ) {
     collection.insert(base);
 };
 
-/*
-* Setup: Insert a single doc that has three fields with one being an array
-*        that is 24 levels deep and 60 elements each
-* Test:  Increment one of shallow (top-level) field on the single doc
-*/
+/**
+ * Setup: Insert a single doc that has three fields with one being an array
+ *        that is 24 levels deep and 60 elements each
+ * Test:  Increment one of shallow (top-level) field on the single doc
+ */
 tests.push( { name: "Update.MmsIncShallow1",
               tags: ['update','mms','single_threaded','regression'],
               pre: setupMMS,
@@ -35,11 +35,11 @@ tests.push( { name: "Update.MmsIncShallow1",
                   }
               ] } );
 
-/*
-* Setup: Insert a single doc that has three fields with one being an array
-*        that is 24 levels deep and 60 elements each
-* Test:  Increment two shallow (top-level) fields on the single doc
-*/
+/**
+ * Setup: Insert a single doc that has three fields with one being an array
+ *        that is 24 levels deep and 60 elements each
+ * Test:  Increment two shallow (top-level) fields on the single doc
+ */
 tests.push( { name: "Update.MmsIncShallow2",
               tags: ['update','mms','core','single_threaded'],
               pre: setupMMS,
@@ -50,12 +50,12 @@ tests.push( { name: "Update.MmsIncShallow2",
                   }
               ] } );
 
-/*
-* Setup: Insert a single doc that has three fields with one being an array
-*        that is 24 levels deep and 60 elements each
-* Test:  Increment one deep field. The selected field is at the high indexed
-*        end of the arrays 
-*/
+/**
+ * Setup: Insert a single doc that has three fields with one being an array
+ *        that is 24 levels deep and 60 elements each
+ * Test:  Increment one deep field. The selected field is at the high indexed
+ *        end of the arrays 
+ */
 tests.push( { name: "Update.MmsIncDeep1",
               tags: ['update','mms','core','single_threaded'],
               pre: setupMMS,
@@ -66,12 +66,12 @@ tests.push( { name: "Update.MmsIncDeep1",
                   }
               ] } );
 
-/*
-* Setup: Insert a single doc that has three fields with one being an array
-*        that is 24 levels deep and 60 elements each
-* Test:  Increment two deep fields. The selected fields are at the high 
-*        indexed end of the arrays 
-*/
+/**
+ * Setup: Insert a single doc that has three fields with one being an array
+ *        that is 24 levels deep and 60 elements each
+ * Test:  Increment two deep fields. The selected fields are at the high 
+ *        indexed end of the arrays 
+ */
 tests.push( { name: "Update.MmsIncDeepSharedPath2",
               tags: ['update','mms','core','single_threaded'],
               pre: setupMMS,
@@ -83,12 +83,12 @@ tests.push( { name: "Update.MmsIncDeepSharedPath2",
                   }
               ] } );
 
-/*
-* Setup: Insert a single doc that has three fields with one being an array
-*        that is 24 levels deep and 60 elements each
-* Test:  Increment three deep fields. The selected fields are at the hgih
-*        indexed end of the arrays
-*/
+/**
+ * Setup: Insert a single doc that has three fields with one being an array
+ *        that is 24 levels deep and 60 elements each
+ * Test:  Increment three deep fields. The selected fields are at the high
+ *        indexed end of the arrays
+ */
 tests.push( { name: "Update.MmsIncDeepSharedPath3",
               tags: ['update','mms','core','single_threaded'],
               pre: setupMMS,
@@ -101,12 +101,12 @@ tests.push( { name: "Update.MmsIncDeepSharedPath3",
                   }
               ] } );
 
-/*
-* Setup: Insert a single doc that has three fields with one being an array
-*        that is 24 levels deep and 60 elements each
-* Test:  Increment two deep fields. The selected fields are near the high 
-*        indexed end of the arrays and do not share the same prefix
-*/
+/**
+ * Setup: Insert a single doc that has three fields with one being an array
+ *        that is 24 levels deep and 60 elements each
+ * Test:  Increment two deep fields. The selected fields are near the high 
+ *        indexed end of the arrays and do not share the same prefix
+ */
 tests.push( { name: "Update.MmsIncDeepDistinctPath2",
               tags: ['update','mms','core','single_threaded'],
               pre: setupMMS,
@@ -118,12 +118,12 @@ tests.push( { name: "Update.MmsIncDeepDistinctPath2",
                   }
               ] } );
 
-/*
-* Setup: Insert a single doc that has three fields with one being an array
-*        that is 24 levels deep and 60 elements each
-* Test:  Increment three deep fields. The selected fields are near the high
-*        indexed end of the arrays and do not share a common prefix.
-*/
+/**
+ * Setup: Insert a single doc that has three fields with one being an array
+ *        that is 24 levels deep and 60 elements each
+ * Test:  Increment three deep fields. The selected fields are near the high
+ *        indexed end of the arrays and do not share a common prefix.
+ */
 tests.push( { name: "Update.MmsIncDeepDistinctPath3",
               tags: ['update','mms','core','single_threaded'],
               pre: setupMMS,
@@ -137,12 +137,12 @@ tests.push( { name: "Update.MmsIncDeepDistinctPath3",
               ] } );
 
 
-/*
-* Setup: Insert a single doc that has three fields with one being an array
-*        that is 24 levels deep and 60 elements each
-* Test:  Increment three deep fields. The selected fields are at the high indexed
-*        end of the 2nd level array but evenly spreaded in the first level array
-*/
+/**
+ * Setup: Insert a single doc that has three fields with one being an array
+ *        that is 24 levels deep and 60 elements each
+ * Test:  Increment three deep fields. The selected fields are at the high indexed
+ *        end of the 2nd level array but evenly spread in the first level array
+ */
 tests.push( { name: "Update.MmsIncDeepDistinctPath4",
               tags: ['update','mms','core','single_threaded'],
               pre: setupMMS,
@@ -152,5 +152,36 @@ tests.push( { name: "Update.MmsIncDeepDistinctPath4",
                     update: { $inc: { "h.23.59.n": 1,
                                       "h.12.59.t": 1,
                                       "h.0.59.v": 1 } }
+                  }
+              ] } );
+
+/**
+ * Setup: Insert a single doc that has three fields with one being an array
+ *        that is 24 levels deep and 60 elements each
+ * Test:  Increment deep fields, some of which share a prefix, some of which do not.
+ */
+tests.push( { name: "Update.MmsIncDeepDistinctPath5",
+              tags: ['update','mms','core','single_threaded'],
+              pre: setupMMS,
+              ops: [
+                  { op:  "update",
+                    query: { _id: 0 },
+                    update: { $inc: {
+                        // Use a random number to prevent the operations from becoming a no-op.
+                        "h.0.0.n": {"#RAND_INT": [0, 100]},
+                        "h.0.0.t": {"#RAND_INT": [0, 100]},
+                        "h.0.0.v": {"#RAND_INT": [0, 100]},
+                        "h.0.15.n": {"#RAND_INT": [0, 100]},
+                        "h.0.30.n": {"#RAND_INT": [0, 100]},
+                        "h.0.45.n": {"#RAND_INT": [0, 100]},
+                        "h.0.59.n": {"#RAND_INT": [0, 100]},
+                        "h.12.0.n": {"#RAND_INT": [0, 100]},
+                        "h.12.15.n": {"#RAND_INT": [0, 100]},
+                        "h.12.30.n": {"#RAND_INT": [0, 100]},
+                        "h.12.45.n": {"#RAND_INT": [0, 100]},
+                        "h.12.59.n": {"#RAND_INT": [0, 100]},
+                        "h.12.59.t": {"#RAND_INT": [0, 100]},
+                        "h.12.59.v": {"#RAND_INT": [0, 100]},
+                    } }
                   }
               ] } );
