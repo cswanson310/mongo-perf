@@ -327,7 +327,7 @@ tests.push( { name: "Update.FieldAtOffset",
  */
 function buildManyElementUpdate() {
     var update = {$set: {}};
-    for (var i = 0; i < 25; i++) {
+    for (var i = 0; i < 200; i++) {
         // Use a random number to prevent the updates from becoming no-ops.
         update.$set['array.' + i + '.x'] = {"#RAND_INT_PLUS_THREAD": [0, 100]};
         update.$set['array.' + i + '.y'] = {"#RAND_INT_PLUS_THREAD": [0, 100]};
@@ -337,12 +337,12 @@ function buildManyElementUpdate() {
 }
 
 tests.push( { name: "Update.ManyElementsWithinArray",
-              tags: ['update','regression'],
+              tags: ['update','regression', 'charlie'],
               pre: function( collection ) {
                   collection.drop();
 
                   var templateDoc = {array: []};
-                  for (var i = 0; i < 25; i++) {
+                  for (var i = 0; i < 200; i++) {
                       templateDoc.array.push({x: 0, y: 0, z: 0});
                   }
 
@@ -361,20 +361,20 @@ tests.push( { name: "Update.ManyElementsWithinArray",
 
 /**
  * Setup: Populate the collection with documents that have a single field which is a large array
- *        with many elements, each of which has ten fields.
+ *        with many elements, each of which has twenty fields.
  * Test:  Each thread works on a range of 100 documents. It randomly selects a document by _id and
- *        selects a random element from the array, then sets each of the fields in the matched array
+ *        selects a random element from the array, then sets 10 of the fields in the matched array
  *        element to a random number.
  */
 tests.push( { name: "Update.MatchedElementWithinArray",
-              tags: ['update','regression'],
+              tags: ['update','regression', 'charlie'],
               pre: function( collection ) {
                   collection.drop();
 
                   var templateDoc = {array: []};
-                  for (var i = 0; i < 25; ++i) {
+                  for (var i = 0; i < 200; ++i) {
                       var arrayElt = {_id: i};
-                      for (var j = 0; j < 10; ++j)  {
+                      for (var j = 0; j < 20; ++j)  {
                           arrayElt["field_" + j] = 0;
                       }
                       templateDoc.array.push(arrayElt);
@@ -393,16 +393,17 @@ tests.push( { name: "Update.MatchedElementWithinArray",
                         "array._id": {"#RAND_INT": [0, 25]}
                     },
                     update: {$set: {
+                        // Use a random number to prevent the update from being a no-op.
                         "array.$.field_0": {"#RAND_INT": [0, 99]},
                         "array.$.field_1": {"#RAND_INT": [0, 99]},
                         "array.$.field_2": {"#RAND_INT": [0, 99]},
                         "array.$.field_3": {"#RAND_INT": [0, 99]},
                         "array.$.field_4": {"#RAND_INT": [0, 99]},
-                        "array.$.field_5": {"#RAND_INT": [0, 99]},
-                        "array.$.field_6": {"#RAND_INT": [0, 99]},
-                        "array.$.field_7": {"#RAND_INT": [0, 99]},
-                        "array.$.field_8": {"#RAND_INT": [0, 99]},
-                        "array.$.field_9": {"#RAND_INT": [0, 99]},
+                        "array.$.field_15": {"#RAND_INT": [0, 99]},
+                        "array.$.field_16": {"#RAND_INT": [0, 99]},
+                        "array.$.field_17": {"#RAND_INT": [0, 99]},
+                        "array.$.field_18": {"#RAND_INT": [0, 99]},
+                        "array.$.field_19": {"#RAND_INT": [0, 99]},
                     }}
                   },
               ] } );

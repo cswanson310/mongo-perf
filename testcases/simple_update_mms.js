@@ -161,7 +161,7 @@ tests.push( { name: "Update.MmsIncDeepDistinctPath4",
  * Test:  Increment deep fields, some of which share a prefix, some of which do not.
  */
 tests.push( { name: "Update.MmsIncDeepDistinctPath5",
-              tags: ['update','mms','core','single_threaded'],
+              tags: ['update','mms','core','single_threaded','charlie'],
               pre: setupMMS,
               ops: [
                   { op:  "update",
