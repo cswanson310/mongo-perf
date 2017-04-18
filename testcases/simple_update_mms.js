@@ -7,6 +7,34 @@ if ( typeof(tests) != "object" ) {
 // capturing them here so they are run automatically. These tests explore the overhead of
 // reaching into deep right children in complex documents.
 
+
+/**
+ * Inserts a single document with the following shape into 'collection':
+ * {
+ *     _id: 0,
+ *     a: 0,
+ *     z: 0,
+ *     h: {
+ *         0: {  // Hour 0.
+ *             0: {n: 0, t: 0, v: 0},  // Minute 0.
+ *             1: {n: 0, t: 0, v: 0},  // Minute 1.
+ *             ...
+ *             59: {n: 0, t: 0, v: 0}  // Minute 59.
+ *         },
+ *         1: {  // Hour 1.
+ *             0: {n: 0, t: 0, v: 0},  // Minute 0.
+ *             ...
+ *             59: {n: 0, t: 0, v: 0}  // Minute 59.
+ *         },
+ *         ...
+ *         23: {  // Hour 23.
+ *             0: {n: 0, t: 0, v: 0},  // Minute 0.
+ *             ...
+ *             59: {n: 0, t: 0, v: 0}  // Minute 59.
+ *         }
+ *     }
+ * }
+ */
 var setupMMS = function( collection ) {
     collection.drop();
 
@@ -21,8 +49,7 @@ var setupMMS = function( collection ) {
 };
 
 /**
- * Setup: Insert a single doc that has three fields with one being an array
- *        that is 24 levels deep and 60 elements each
+ * Setup: See setupMMS().
  * Test:  Increment one of shallow (top-level) field on the single doc
  */
 tests.push( { name: "Update.MmsIncShallow1",
@@ -36,8 +63,7 @@ tests.push( { name: "Update.MmsIncShallow1",
               ] } );
 
 /**
- * Setup: Insert a single doc that has three fields with one being an array
- *        that is 24 levels deep and 60 elements each
+ * Setup: See setupMMS().
  * Test:  Increment two shallow (top-level) fields on the single doc
  */
 tests.push( { name: "Update.MmsIncShallow2",
@@ -51,8 +77,7 @@ tests.push( { name: "Update.MmsIncShallow2",
               ] } );
 
 /**
- * Setup: Insert a single doc that has three fields with one being an array
- *        that is 24 levels deep and 60 elements each
+ * Setup: See setupMMS().
  * Test:  Increment one deep field. The selected field is at the high indexed
  *        end of the arrays 
  */
@@ -84,8 +109,7 @@ tests.push( { name: "Update.MmsIncDeepSharedPath2",
               ] } );
 
 /**
- * Setup: Insert a single doc that has three fields with one being an array
- *        that is 24 levels deep and 60 elements each
+ * Setup: See setupMMS().
  * Test:  Increment three deep fields. The selected fields are at the high
  *        indexed end of the arrays
  */
@@ -119,8 +143,7 @@ tests.push( { name: "Update.MmsIncDeepDistinctPath2",
               ] } );
 
 /**
- * Setup: Insert a single doc that has three fields with one being an array
- *        that is 24 levels deep and 60 elements each
+ * Setup: See setupMMS().
  * Test:  Increment three deep fields. The selected fields are near the high
  *        indexed end of the arrays and do not share a common prefix.
  */
@@ -156,8 +179,7 @@ tests.push( { name: "Update.MmsIncDeepDistinctPath4",
               ] } );
 
 /**
- * Setup: Insert a single doc that has three fields with one being an array
- *        that is 24 levels deep and 60 elements each
+ * Setup: See setupMMS().
  * Test:  Increment deep fields, some of which share a prefix, some of which do not.
  */
 tests.push( { name: "Update.MmsIncDeepDistinctPath5",
@@ -166,7 +188,7 @@ tests.push( { name: "Update.MmsIncDeepDistinctPath5",
               ops: [
                   { op:  "update",
                     query: { _id: 0 },
-                    update: { $inc: {
+                    update: { $set: {
                         // Use a random number to prevent the operations from becoming a no-op.
                         "h.0.0.n": {"#RAND_INT": [0, 100]},
                         "h.0.0.t": {"#RAND_INT": [0, 100]},

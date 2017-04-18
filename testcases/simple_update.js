@@ -329,9 +329,9 @@ function buildManyElementUpdate() {
     var update = {$set: {}};
     for (var i = 0; i < 200; i++) {
         // Use a random number to prevent the updates from becoming no-ops.
-        update.$set['array.' + i + '.x'] = {"#RAND_INT_PLUS_THREAD": [0, 100]};
-        update.$set['array.' + i + '.y'] = {"#RAND_INT_PLUS_THREAD": [0, 100]};
-        update.$set['array.' + i + '.z'] = {"#RAND_INT_PLUS_THREAD": [0, 100]};
+        update.$set['array.' + i + '.x'] = {"#RAND_INT": [0, 100]};
+        update.$set['array.' + i + '.y'] = {"#RAND_INT": [0, 100]};
+        update.$set['array.' + i + '.z'] = {"#RAND_INT": [0, 100]};
     }
     return update;
 }
@@ -390,7 +390,7 @@ tests.push( { name: "Update.MatchedElementWithinArray",
                   { op:  "update",
                     query: {
                         _id: {"#RAND_INT_PLUS_THREAD": [0, 100]},
-                        "array._id": {"#RAND_INT": [0, 25]}
+                        "array._id": {"#RAND_INT": [0, 200]}
                     },
                     update: {$set: {
                         // Use a random number to prevent the update from being a no-op.
