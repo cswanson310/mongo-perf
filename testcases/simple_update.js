@@ -321,7 +321,7 @@ tests.push( { name: "Update.FieldAtOffset",
 
 /**
  * Setup: Populate the collection with documents that have a single field which is a large array
- *        with many elements, each of which has three fields.
+ *        with 200 elements, each of which has three fields.
  * Test:  Each thread works on a range of 100 documents. It randomly selects a document by _id and
  *        sets each of the fields in each of the array elements to a random number.
  */
@@ -361,7 +361,7 @@ tests.push( { name: "Update.ManyElementsWithinArray",
 
 /**
  * Setup: Populate the collection with documents that have a single field which is a large array
- *        with many elements, each of which has twenty fields.
+ *        with 200 elements, each of which has twenty fields.
  * Test:  Each thread works on a range of 100 documents. It randomly selects a document by _id and
  *        selects a random element from the array, then sets 10 of the fields in the matched array
  *        element to a random number.
@@ -373,7 +373,7 @@ tests.push( { name: "Update.MatchedElementWithinArray",
 
                   var templateDoc = {array: []};
                   for (var i = 0; i < 200; ++i) {
-                      var arrayElt = {_id: i};
+                      var arrayElt = {elt_id: i};
                       for (var j = 0; j < 20; ++j)  {
                           arrayElt["field_" + j] = 0;
                       }
@@ -390,7 +390,7 @@ tests.push( { name: "Update.MatchedElementWithinArray",
                   { op:  "update",
                     query: {
                         _id: {"#RAND_INT_PLUS_THREAD": [0, 100]},
-                        "array._id": {"#RAND_INT": [0, 200]}
+                        "array.elt_id": {"#RAND_INT": [0, 200]}
                     },
                     update: {$set: {
                         // Use a random number to prevent the update from being a no-op.

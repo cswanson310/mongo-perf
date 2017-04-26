@@ -7,7 +7,6 @@ if ( typeof(tests) != "object" ) {
 // capturing them here so they are run automatically. These tests explore the overhead of
 // reaching into deep right children in complex documents.
 
-
 /**
  * Inserts a single document with the following shape into 'collection':
  * {
@@ -92,8 +91,7 @@ tests.push( { name: "Update.MmsIncDeep1",
               ] } );
 
 /**
- * Setup: Insert a single doc that has three fields with one being an array
- *        that is 24 levels deep and 60 elements each
+ * Setup: See setupMMS().
  * Test:  Increment two deep fields. The selected fields are at the high 
  *        indexed end of the arrays 
  */
@@ -126,8 +124,7 @@ tests.push( { name: "Update.MmsIncDeepSharedPath3",
               ] } );
 
 /**
- * Setup: Insert a single doc that has three fields with one being an array
- *        that is 24 levels deep and 60 elements each
+ * Setup: See setupMMS().
  * Test:  Increment two deep fields. The selected fields are near the high 
  *        indexed end of the arrays and do not share the same prefix
  */
@@ -159,10 +156,8 @@ tests.push( { name: "Update.MmsIncDeepDistinctPath3",
                   }
               ] } );
 
-
 /**
- * Setup: Insert a single doc that has three fields with one being an array
- *        that is 24 levels deep and 60 elements each
+ * Setup: See setupMMS().
  * Test:  Increment three deep fields. The selected fields are at the high indexed
  *        end of the 2nd level array but evenly spread in the first level array
  */
@@ -182,7 +177,7 @@ tests.push( { name: "Update.MmsIncDeepDistinctPath4",
  * Setup: See setupMMS().
  * Test:  Increment deep fields, some of which share a prefix, some of which do not.
  */
-tests.push( { name: "Update.MmsIncDeepDistinctPath5",
+tests.push( { name: "Update.MmsSetDeepDistinctPaths",
               tags: ['update','mms','core','single_threaded'],
               pre: setupMMS,
               ops: [
