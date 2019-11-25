@@ -1305,7 +1305,6 @@ generateTestCase({
 generateTestCase({
     name: "SortGroupWithBigDocuments",
     nDocs: 220,
-    tags: ["sort", "perf_inv"],
     docGenerator: function simpleSortDocGenerator(i) {
         return {
             _id: i,
@@ -1328,7 +1327,6 @@ generateTestCase({
 
 generateTestCase({
     name: "IndexedSortGroupWithBigDocuments",
-    tags: ["sort", "perf_inv"],
     pre: function sortGroupBigDocumentsPre(isView) {
         return function(collectionOrView) {
             function sortGroupBigDocGenerator(i) {
