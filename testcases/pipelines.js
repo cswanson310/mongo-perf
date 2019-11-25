@@ -1268,3 +1268,110 @@ generateTestCase({
     ],
     addSkipStage: false,
 });
+
+generateTestCase({
+    name: "SortByComputedField",
+    tags: ["sort", "agg_query_comparison"],
+    nDocs: 14400,
+    docGenerator: function simpleSortDocGenerator(i) {
+        return {_id: i, x: Random.randInt(200000)};
+    },
+    pipeline: [{$addFields: {y: {$add: ["$x", "$x"]}}}, {$sort: {y: 1}}]
+});
+
+generateTestCase({
+    name: "SortProjectWithBigDocuments",
+    tags: ["sort", "agg_query_comparison"],
+    nDocs: 220,
+    docGenerator: function simpleSortDocGenerator(i) {
+        return {
+            _id: i,
+            x: Random.randInt(200000),
+            y: 10,
+            string1: getStringOfLength(50 * 1024),
+            string2: getStringOfLength(50 * 1024),
+            string3: getStringOfLength(50 * 1024),
+            string4: getStringOfLength(50 * 1024),
+            string5: getStringOfLength(50 * 1024),
+            string6: getStringOfLength(50 * 1024),
+            string7: getStringOfLength(50 * 1024),
+            string8: getStringOfLength(50 * 1024),
+            string9: getStringOfLength(50 * 1024)
+        };
+    },
+    pipeline: [{$sort: {x: 1}}, {$project: {x: 1, y:1}}]
+});
+
+generateTestCase({
+    name: "SortGroupWithBigDocuments",
+    nDocs: 220,
+    tags: ["sort", "perf_inv"],
+    docGenerator: function simpleSortDocGenerator(i) {
+        return {
+            _id: i,
+            x: Random.randInt(200000),
+            y: 10,
+            z: Random.randInt(50),
+            string1: getStringOfLength(50 * 1024),
+            string2: getStringOfLength(50 * 1024),
+            string3: getStringOfLength(50 * 1024),
+            string4: getStringOfLength(50 * 1024),
+            string5: getStringOfLength(50 * 1024),
+            string6: getStringOfLength(50 * 1024),
+            string7: getStringOfLength(50 * 1024),
+            string8: getStringOfLength(50 * 1024),
+            string9: getStringOfLength(50 * 1024)
+        };
+    },
+    pipeline: [{$sort: {x: 1}}, {$group: {_id: "$z", x: {$last: "$x"}, y: {$last: "$y"}}}]
+});
+
+generateTestCase({
+    name: "IndexedSortGroupWithBigDocuments",
+    tags: ["sort", "perf_inv"],
+    pre: function sortGroupBigDocumentsPre(isView) {
+        return function(collectionOrView) {
+            function sortGroupBigDocGenerator(i) {
+                return {
+                    _id: i,
+                    x: Random.randInt(200000),
+                    y: 10,
+                    z: Random.randInt(50),
+                    string1: getStringOfLength(50 * 1024),
+                    string2: getStringOfLength(50 * 1024),
+                    string3: getStringOfLength(50 * 1024),
+                    string4: getStringOfLength(50 * 1024),
+                    string5: getStringOfLength(50 * 1024),
+                    string6: getStringOfLength(50 * 1024),
+                    string7: getStringOfLength(50 * 1024),
+                    string8: getStringOfLength(50 * 1024),
+                    string9: getStringOfLength(50 * 1024)
+                };
+            }
+            var db = collectionOrView.getDB();
+            var sourceCollection;
+
+            collectionOrView.drop();
+
+            if (isView) {
+                // 'collectionOrView' is an identity view, so specify a backing collection to serve
+                // as its source and perform the view creation.
+                var viewName = collectionOrView.getName();
+                var backingCollName = viewName + "_backing";
+                sourceCollection = db[backingCollName];
+                assert.commandWorked(db.createView(viewName, backingCollName, []));
+            } else {
+                sourceCollection = collectionOrView;
+            }
+
+            var nDocs = 220;
+            var bulk = sourceCollection.initializeUnorderedBulkOp();
+            for (var i = 0; i < nDocs; i++) {
+                bulk.insert(sortGroupBigDocGenerator(i));
+            }
+            bulk.execute();
+            assert.commandWorked(sourceCollection.createIndex({x: 1}));
+        };
+    },
+    pipeline: [{$sort: {x: 1}}, {$group: {_id: "$z", x: {$last: "$x"}, y: {$last: "$y"}}}]
+});
