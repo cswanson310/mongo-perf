@@ -2,7 +2,7 @@ if (typeof (tests) != "object") {
     tests = [];
 }
 
-(function () {
+(function() {
 'use strict';
 
 /**
@@ -280,13 +280,26 @@ generateTestCase({
     docGenerator: function basicGroupDocGenerator(i) {
         return {_id: i, _idMod10: i % 10};
     },
-    pipeline: [{$group: {_id: "$_idMod10", sum: {$accumulator:{
-        lang: "js",
-        init: function() { return 0; },
-        accumulateArgs: ["$_id"],
-        accumulate: function(state, value) { return state + value; },
-        merge: function(state1, state2) { return state1 + state2; },
-    }}}}]
+    pipeline: [{
+        $group: {
+            _id: "$_idMod10",
+            sum: {
+                $accumulator: {
+                    lang: "js",
+                    init: function() {
+                        return 0;
+                    },
+                    accumulateArgs: ["$_id"],
+                    accumulate: function(state, value) {
+                        return state + value;
+                    },
+                    merge: function(state1, state2) {
+                        return state1 + state2;
+                    },
+                }
+            }
+        }
+    }]
 });
 
 generateTestCase({
@@ -296,24 +309,35 @@ generateTestCase({
     docGenerator: function basicGroupDocGenerator(i) {
         return {_id: i, _idMod10: i % 10};
     },
-    pipeline: [{$group: {_id: "$_idMod10", sum: {$accumulator:{
-        lang: "js",
-        init: function() { return { count: 0, sum: 0 }; },
-        accumulateArgs: ["$_id"],
-        accumulate: function(state, value) {
-            return {
-                count: state.count + 1,
-                sum: state.sum + value,
-            };
-        },
-        merge: function(state1, state2) {
-            return {
-                count: state1.count + state2.count,
-                sum: state1.sum + state2.sum,
-            };
-        },
-        finalize: function(state) { return state.sum / state.count; },
-    }}}}]
+    pipeline: [{
+        $group: {
+            _id: "$_idMod10",
+            sum: {
+                $accumulator: {
+                    lang: "js",
+                    init: function() {
+                        return {count: 0, sum: 0};
+                    },
+                    accumulateArgs: ["$_id"],
+                    accumulate: function(state, value) {
+                        return {
+                            count: state.count + 1,
+                            sum: state.sum + value,
+                        };
+                    },
+                    merge: function(state1, state2) {
+                        return {
+                            count: state1.count + state2.count,
+                            sum: state1.sum + state2.sum,
+                        };
+                    },
+                    finalize: function(state) {
+                        return state.sum / state.count;
+                    },
+                }
+            }
+        }
+    }]
 });
 
 generateTestCase({
@@ -349,7 +373,8 @@ function getBackingCollection(isView, collectionOrView) {
  * Each object in 'foreignCollsInfo' array should have a 'suffix' field representing the collection
  * name and 'docGen' field representing the function used for document generation.
  */
-function basicMultiCollectionDataPopulator({isView, localDocGen, foreignCollsInfo, nDocs, postFunction}) {
+function basicMultiCollectionDataPopulator(
+    {isView, localDocGen, foreignCollsInfo, nDocs, postFunction}) {
     return function(collectionOrView) {
         const db = collectionOrView.getDB();
         collectionOrView.drop();
@@ -389,7 +414,12 @@ function basicLookupPopulator(isView) {
     }
 
     var nDocs = 100;
-    return basicMultiCollectionDataPopulator({isView, localDocGen, foreignCollsInfo: [{suffix: "_lookup", docGen: foreignDocGen}], nDocs});
+    return basicMultiCollectionDataPopulator({
+        isView,
+        localDocGen,
+        foreignCollsInfo: [{suffix: "_lookup", docGen: foreignDocGen}],
+        nDocs
+    });
 }
 
 /**
@@ -406,7 +436,12 @@ function basicArrayLookupPopulator(isView) {
     }
 
     var nDocs = 100;
-    return basicMultiCollectionDataPopulator({isView, localDocGen, foreignCollsInfo: [{suffix: "_lookup", docGen: foreignDocGen}], nDocs});
+    return basicMultiCollectionDataPopulator({
+        isView,
+        localDocGen,
+        foreignCollsInfo: [{suffix: "_lookup", docGen: foreignDocGen}],
+        nDocs
+    });
 }
 
 /**
@@ -423,7 +458,12 @@ function basicArrayOfObjectLookupPopulator(isView) {
     }
 
     var nDocs = 50;
-    return basicMultiCollectionDataPopulator({isView, localDocGen, foreignCollsInfo: [{suffix: "_lookup", docGen: foreignDocGen}], nDocs});
+    return basicMultiCollectionDataPopulator({
+        isView,
+        localDocGen,
+        foreignCollsInfo: [{suffix: "_lookup", docGen: foreignDocGen}],
+        nDocs
+    });
 }
 
 /**
@@ -442,10 +482,16 @@ function basicUncorrelatedPipelineLookupPopulator(isView, disableCache) {
     if (disableCache === undefined) {
         disableCache = false;
     }
-    return basicMultiCollectionDataPopulator({isView, localDocGen, foreignCollsInfo: [{suffix: "_lookup", docGen: foreignDocGen}], nDocs, postFunction: (disableCache ? (function() {
+    return basicMultiCollectionDataPopulator({
+        isView,
+        localDocGen,
+        foreignCollsInfo: [{suffix: "_lookup", docGen: foreignDocGen}],
+        nDocs,
+        postFunction: (disableCache ? (function() {
             setDocumentSourceLookupCacheSize(0);
         })
-                                    : undefined) });
+                                    : undefined)
+    });
 }
 
 /**
@@ -1040,23 +1086,21 @@ generateTestCase({
     docGenerator: function simpleReplaceRootDocGenerator(i) {
         return {_id: i, x: i, string: new Array(1024).join("x")};
     },
-    pipeline: [
-        {
-            $replaceRoot: {
-                newRoot: {
-                    a: {$literal: 5},
-                    longishNameHere: {$substr: ["$string", 0, 10]},
-                    longishNameForNestedDocument: {
-                        doingSomeMath: {$add: ["$x", 1]},
-                        anotherSubDocument: {
-                            literalField: {$literal: "Hello!"},
-                            arrayField: [1, 2, 3, 4],
-                        }
+    pipeline: [{
+        $replaceRoot: {
+            newRoot: {
+                a: {$literal: 5},
+                longishNameHere: {$substr: ["$string", 0, 10]},
+                longishNameForNestedDocument: {
+                    doingSomeMath: {$add: ["$x", 1]},
+                    anotherSubDocument: {
+                        literalField: {$literal: "Hello!"},
+                        arrayField: [1, 2, 3, 4],
                     }
                 }
             }
         }
-    ],
+    }],
 });
 
 generateTestCase({
@@ -1152,6 +1196,41 @@ generateTestCase({
     pipeline: [{$unwind: "$array"}, {$skip: 10}]
 });
 
+generateTestCase({
+    name: "UnwindThenSortThenGroup",
+    tags: ["sort", "streamingGroup"],
+    nDocs: 220,
+    docGenerator: simpleSmallDocUnwindGenerator,
+    pipeline:
+        [{$unwind: "$array"}, {$sort: {array: -1}}, {$group: {_id: "$array", count: {$sum: 1}}}]
+});
+
+/**
+ * Similar to 'simpleSmallDocUnwindGenerator', but generates a potentially infinite number of
+ * distinct values inside the arrays. Still 10 values per document.
+ */
+let manyKeysSmallDocUnwindGenerator =
+    () => {
+        let counter = 0;
+        return (i) => {
+            var valArray = [];
+            for (var j = 0; j < 10; j++) {
+                valArray.push(getStringOfLength(10) + counter);
+                // Increment the counter every third time, generate three of each key.
+                counter += (j % 3);
+            }
+            return {_id: i, array: valArray, smallString: getStringOfLength(10)};
+        };
+    }
+
+generateTestCase({
+    name: "UnwindThenSortThenGroupManyKeys",
+    tags: ["sort", "streamingGroup"],
+    nDocs: 1000,
+    docGenerator: manyKeysSmallDocUnwindGenerator,
+    pipeline:
+        [{$unwind: "$array"}, {$sort: {array: -1}}, {$group: {_id: "$array", count: {$sum: 1}}}]
+});
 //
 // Count operations expressed as aggregations.
 //
@@ -1352,6 +1431,22 @@ generateTestCase({
     pipeline: [{$sort: {x: 1}}, {$group: {_id: "$z", x: {$last: "$x"}, y: {$last: "$y"}}}]
 });
 
+generateTestCase({
+    name: "SortStreamGroupWithBigDocuments",
+    tags: ["sort", "streamingGroup"],
+    nDocs: 220,
+    docGenerator: sortGroupBigDocGenerator,
+    pipeline: [{$sort: {x: 1}}, {$group: {_id: "$x", x: {$last: "$z"}, y: {$last: "$y"}}}]
+});
+
+generateTestCase({
+    name: "IndexedSortStreamGroupWithBigDocuments",
+    tags: ["sort", "streamingGroup"],
+    nDocs: 220,
+    indices: [{x: 1}],
+    docGenerator: sortGroupBigDocGenerator,
+    pipeline: [{$sort: {x: 1}}, {$group: {_id: "$x", x: {$last: "$z"}, y: {$last: "$y"}}}]
+});
 /**
  * test the performance of $function using document shapes similar to $where.
  */
@@ -1662,20 +1757,20 @@ generateTestCase({
         sourceColl.getDB()[sourceColl.getName() + "_unionWith1"].drop();
         sourceColl.getDB()[sourceColl.getName() + "_unionWith2"].drop();
     },
-    pipeline: [{
-        $match: {a: 1}},  {
-        $unionWith: {
-            coll: '#B_COLL_unionWith1',
-            pipeline: [
-                {
+    pipeline: [
+        {$match: {a: 1}},
+        {
+            $unionWith: {
+                coll: '#B_COLL_unionWith1',
+                pipeline: [{
                     $unionWith: {
                         coll: '#B_COLL_unionWith2',
                         pipeline: [{$unionWith: {coll: '#B_COLL', pipeline: [{$match: {b: 1}}]}}]
                     }
-                }
-            ]
+                }]
+            }
         }
-    }]
+    ]
 });
 
 generateTestCase({
@@ -1724,7 +1819,7 @@ generateTestCase({
 generateTestCase({
     name: "UnionWith.MultiLevelWithIndex",
     tags: ["unionWith", ">=4.3.4"],
-    indices: [{a: 1},{b: 1}],
+    indices: [{a: 1}, {b: 1}],
     pre: function basicUnionFun(isView) {
         return basicMultiCollectionDataPopulator({
             isView: isView,
@@ -1754,20 +1849,20 @@ generateTestCase({
         sourceColl.getDB()[sourceColl.getName() + "_unionWith1"].drop();
         sourceColl.getDB()[sourceColl.getName() + "_unionWith2"].drop();
     },
-    pipeline: [{
-        $match: {a: 1}}, {
-        $unionWith: {
-            coll: '#B_COLL_unionWith1',
-            pipeline: [
-                {
+    pipeline: [
+        {$match: {a: 1}},
+        {
+            $unionWith: {
+                coll: '#B_COLL_unionWith1',
+                pipeline: [{
                     $unionWith: {
                         coll: '#B_COLL_unionWith2',
                         pipeline: [{$unionWith: {coll: '#B_COLL', pipeline: [{$match: {b: 1}}]}}]
                     }
-                }
-            ]
+                }]
+            }
         }
-    }]
+    ]
 });
 
 generateTestCase({
